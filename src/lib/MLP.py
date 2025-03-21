@@ -43,8 +43,6 @@ class Module:
 
 class Neuron(Module):
     def __init__(self, nin, activation="tanh",weight: Weight=None):
-
-
         raw_weights = weight() if weight is not None else [random.uniform(-1, 1) for _ in range(nin)]
         self.w = [Value(w) for w in raw_weights]
         #ini bobot bias
@@ -71,7 +69,6 @@ class Neuron(Module):
 
 class Layer(Module):
     def __init__(self, nin, nout, activation="tanh", weight: Weight=None):
-
         self.neurons = [Neuron(nin, activation=activation, weight=weight) for _ in range(nout)]
 
     def __call__(self, x):
@@ -87,6 +84,7 @@ class Layer(Module):
 
 class MLP(Module):
     def __init__(self, nin, nouts, activations=None, weight: Weight=None):
+        #jika activation tidak diisi maka akan diisi dengan nilai default yaitu tanh
         if activations is None:
             activations = ["tanh"] * len(nouts)
 
@@ -94,11 +92,13 @@ class MLP(Module):
             raise ValueError("activations list must match the number of layers (nouts).")
 
         sz = [nin] + nouts
+        print("sz: " ,sz)
         self.layers = [
             Layer(sz[i], sz[i + 1], activation=activations[i],weight=weight) for i in range(len(nouts))
         ]
 
         self.weight = weight
+        self.inputlayer = nin
 
     def __call__(self, x):
         for layer in self.layers:
@@ -109,4 +109,4 @@ class MLP(Module):
         return [p for layer in self.layers for p in layer.parameters()]
 
     def __repr__(self):
-        return f"MLP of [{', '.join(str(layer) for layer in self.layers)}]"
+        return f"inputx : {self.inputlayer} MLP of [{', '.join(str(layer) for layer in self.layers)}]"

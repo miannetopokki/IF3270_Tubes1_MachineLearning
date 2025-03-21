@@ -1,53 +1,50 @@
 digraph {
 	graph [rankdir=LR]
-	layer0_neuron0 [label="Neuron 0
-LinearNeuron(3)" fillcolor=lightblue shape=circle style=filled]
-	layer0_neuron1 [label="Neuron 1
-LinearNeuron(3)" fillcolor=lightblue shape=circle style=filled]
-	layer1_neuron0 [label="Neuron 0
-ReluNeuron(2)" fillcolor=lightblue shape=circle style=filled]
-	layer1_neuron1 [label="Neuron 1
-ReluNeuron(2)" fillcolor=lightblue shape=circle style=filled]
-	layer1_neuron2 [label="Neuron 2
-ReluNeuron(2)" fillcolor=lightblue shape=circle style=filled]
-	layer1_neuron3 [label="Neuron 3
-ReluNeuron(2)" fillcolor=lightblue shape=circle style=filled]
-	layer1_neuron4 [label="Neuron 4
-ReluNeuron(2)" fillcolor=lightblue shape=circle style=filled]
-	layer1_neuron5 [label="Neuron 5
-ReluNeuron(2)" fillcolor=lightblue shape=circle style=filled]
-	layer1_neuron6 [label="Neuron 6
-ReluNeuron(2)" fillcolor=lightblue shape=circle style=filled]
-	layer2_neuron0 [label="Neuron 0
-TanhNeuron(7)" fillcolor=lightblue shape=circle style=filled]
-	layer2_neuron1 [label="Neuron 1
-TanhNeuron(7)" fillcolor=lightblue shape=circle style=filled]
+	input0 [label=X0 fillcolor=red height=1.0 shape=circle style=filled width=1.0]
+	input1 [label=X1 fillcolor=red height=1.0 shape=circle style=filled width=1.0]
+	input2 [label=X2 fillcolor=red height=1.0 shape=circle style=filled width=1.0]
+	layer0_neuron0 [label=H0_0 fillcolor=yellow height=1.0 shape=circle style=filled width=1.0]
+	layer0_neuron1 [label=H0_1 fillcolor=yellow height=1.0 shape=circle style=filled width=1.0]
+	layer0_neuron2 [label=H0_2 fillcolor=yellow height=1.0 shape=circle style=filled width=1.0]
+	layer1_neuron0 [label=H1_0 fillcolor=yellow height=1.0 shape=circle style=filled width=1.0]
+	layer1_neuron1 [label=H1_1 fillcolor=yellow height=1.0 shape=circle style=filled width=1.0]
+	layer1_neuron2 [label=H1_2 fillcolor=yellow height=1.0 shape=circle style=filled width=1.0]
+	layer2_neuron0 [label=H2_0 fillcolor=yellow height=1.0 shape=circle style=filled width=1.0]
+	layer2_neuron1 [label=H2_1 fillcolor=yellow height=1.0 shape=circle style=filled width=1.0]
+	layer2_neuron2 [label=H2_2 fillcolor=yellow height=1.0 shape=circle style=filled width=1.0]
+	layer3_neuron0 [label=O1 fillcolor=green height=1.0 shape=circle style=filled width=1.0]
+	layer3_neuron1 [label=O2 fillcolor=green height=1.0 shape=circle style=filled width=1.0]
+	input0 -> layer0_neuron0
+	input0 -> layer0_neuron1
+	input0 -> layer0_neuron2
+	input1 -> layer0_neuron0
+	input1 -> layer0_neuron1
+	input1 -> layer0_neuron2
+	input2 -> layer0_neuron0
+	input2 -> layer0_neuron1
+	input2 -> layer0_neuron2
 	layer0_neuron0 -> layer1_neuron0
 	layer0_neuron0 -> layer1_neuron1
 	layer0_neuron0 -> layer1_neuron2
-	layer0_neuron0 -> layer1_neuron3
-	layer0_neuron0 -> layer1_neuron4
-	layer0_neuron0 -> layer1_neuron5
-	layer0_neuron0 -> layer1_neuron6
 	layer0_neuron1 -> layer1_neuron0
 	layer0_neuron1 -> layer1_neuron1
 	layer0_neuron1 -> layer1_neuron2
-	layer0_neuron1 -> layer1_neuron3
-	layer0_neuron1 -> layer1_neuron4
-	layer0_neuron1 -> layer1_neuron5
-	layer0_neuron1 -> layer1_neuron6
+	layer0_neuron2 -> layer1_neuron0
+	layer0_neuron2 -> layer1_neuron1
+	layer0_neuron2 -> layer1_neuron2
 	layer1_neuron0 -> layer2_neuron0
 	layer1_neuron0 -> layer2_neuron1
+	layer1_neuron0 -> layer2_neuron2
 	layer1_neuron1 -> layer2_neuron0
 	layer1_neuron1 -> layer2_neuron1
+	layer1_neuron1 -> layer2_neuron2
 	layer1_neuron2 -> layer2_neuron0
 	layer1_neuron2 -> layer2_neuron1
-	layer1_neuron3 -> layer2_neuron0
-	layer1_neuron3 -> layer2_neuron1
-	layer1_neuron4 -> layer2_neuron0
-	layer1_neuron4 -> layer2_neuron1
-	layer1_neuron5 -> layer2_neuron0
-	layer1_neuron5 -> layer2_neuron1
-	layer1_neuron6 -> layer2_neuron0
-	layer1_neuron6 -> layer2_neuron1
+	layer1_neuron2 -> layer2_neuron2
+	layer2_neuron0 -> layer3_neuron0
+	layer2_neuron0 -> layer3_neuron1
+	layer2_neuron1 -> layer3_neuron0
+	layer2_neuron1 -> layer3_neuron1
+	layer2_neuron2 -> layer3_neuron0
+	layer2_neuron2 -> layer3_neuron1
 }

@@ -1,6 +1,7 @@
 #import from /lib
 from lib.MLP import *
-from lib.graph import draw_dot, draw_mlp
+from lib.graph import *
+from lib.value import *
 import os
 import sys
 
@@ -26,8 +27,7 @@ if __name__ == "__main__":
 
     input_layer = 3
     layer_f_activations = [
-    [2,'linear'],#hidden layer 1
-    [7,'relu'], #hidden layer 2
+    [2,'tanh'],#hidden layer 1
     [2,'tanh'] #output layer
     ]
 
@@ -41,9 +41,10 @@ if __name__ == "__main__":
 
     
 
-    weight = Weight("uniform", 42, input_layer, lower=-1, upper=1)
+    weight = Weight("uniform", 42, input_layer, lower=-0.1, upper=0.1)
 
     n = MLP(input_layer,[n[0] for n in layer_f_activations],activations=[n[1] for n in layer_f_activations],weight=weight)
+    print(n.layers[0].neurons[0].w)
     for i in range(50): #50 epoch
 
         #Forward
@@ -59,17 +60,22 @@ if __name__ == "__main__":
         loss.backward()
         learning_rate =0.01
 
+         #gradient descent
+        for p in n.parameters():
+            #W + -lr*deltaW
+            p.data += -1 *learning_rate * p.grad
 
-    #gradient descent
-    for p in n.parameters():
-        #W + -lr*deltaW
-        p.data += -1 *learning_rate * p.grad
+        print(i,"Lost Func (MSE) " ,loss.data)
+        
 
-    print(i,"Lost Func (MSE) " ,loss.data)
+
+    print(n.parameters())
+   
+
 
     for x in ypred:
         print(x)
 
 
-    draw_dot(loss).render("graph_output.dot",view = True)
-    draw_mlp(n).render("mlp.dot",view= True)
+    # draw_dot(loss).render("graph_output.dot",view = True)
+    # draw_mlp(n).render("mlp.dot",view= True)
