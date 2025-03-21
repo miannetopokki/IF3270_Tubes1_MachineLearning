@@ -70,9 +70,19 @@ class Value:
 
         out._backward = _backward
         return out
+    
+    def sigmoid(self):
+        x = self.data
+        s = 1/(1+math.exp(-x))
+        out = Value(s, (self,), 'sigmoid')
+
+        #Turunan sigmoid
+        def _backward():        
+            self.grad += (out.data * (1 - out.data)) * out.grad
+        out._backward = _backward
+        return out
 
 
-    #Todo Sigmoid
     #Todo   Softmax
 
 
