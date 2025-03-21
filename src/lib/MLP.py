@@ -1,7 +1,36 @@
-
-
+import math
 import random
 from lib.value import Value
+
+
+class Weight:
+    def __init__(self, method, seed, nin, upper=None, lower=None, mean=None, variance=None):
+        self.method = method
+        self.nin = nin
+        self.upper = upper
+        self.lower = lower
+        self.mean = mean
+        self.variance = variance
+        self.rng = random.Random(seed) 
+
+    def __call__(self):
+        if self.method == "uniform":
+            if self.lower is None or self.upper is None:
+                raise ValueError("Lower and upper bounds must be provided for uniform distribution.")
+            return [self.rng.uniform(self.lower, self.upper) for _ in range(self.nin)]
+        
+        elif self.method == "normal":
+            if self.mean is None or self.variance is None:
+                raise ValueError("Mean and variance must be provided for normal distribution.")
+            stddev = math.sqrt(self.variance)
+            return [self.rng.gauss(self.mean, stddev) for _ in range(self.nin)]
+        
+        elif self.method == "zero":
+            return [0 for _ in range(self.nin)]
+        
+        else:
+            raise ValueError("Invalid weight initialization method.")
+
 
 class Module:
 
@@ -13,8 +42,12 @@ class Module:
         return []
 
 class Neuron(Module):
-    def __init__(self, nin, activation="tanh"):
-        self.w = [Value(random.uniform(-1, 1)) for _ in range(nin)]
+    def __init__(self, nin, activation="tanh",weight: Weight=None):
+
+
+        raw_weights = weight() if weight is not None else [random.uniform(-1, 1) for _ in range(nin)]
+        self.w = [Value(w) for w in raw_weights]
+        #ini bobot bias
         self.b = Value(0)
         self.activation = activation.lower()
 
@@ -37,8 +70,9 @@ class Neuron(Module):
         return f"{self.activation.capitalize()}Neuron({len(self.w)})"
 
 class Layer(Module):
-    def __init__(self, nin, nout, activation="tanh"):
-        self.neurons = [Neuron(nin, activation=activation) for _ in range(nout)]
+    def __init__(self, nin, nout, activation="tanh", weight: Weight=None):
+
+        self.neurons = [Neuron(nin, activation=activation, weight=weight) for _ in range(nout)]
 
     def __call__(self, x):
         out = [n(x) for n in self.neurons]
@@ -52,7 +86,7 @@ class Layer(Module):
 
 
 class MLP(Module):
-    def __init__(self, nin, nouts, activations=None):
+    def __init__(self, nin, nouts, activations=None, weight: Weight=None):
         if activations is None:
             activations = ["tanh"] * len(nouts)
 
@@ -61,8 +95,10 @@ class MLP(Module):
 
         sz = [nin] + nouts
         self.layers = [
-            Layer(sz[i], sz[i + 1], activation=activations[i]) for i in range(len(nouts))
+            Layer(sz[i], sz[i + 1], activation=activations[i],weight=weight) for i in range(len(nouts))
         ]
+
+        self.weight = weight
 
     def __call__(self, x):
         for layer in self.layers:

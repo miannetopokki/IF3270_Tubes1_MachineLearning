@@ -1,0 +1,9 @@
+#ignore .dot and svg
+*.dot
+*.svg
+
+#ignore tempcoderunner
+src/tempCodeRunnerFile.py
+
+#ignore pycache
+__pycache__/
