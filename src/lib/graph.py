@@ -12,10 +12,6 @@ def trace(root):
     return nodes, edges
 
 def draw_dot(root, format='svg', rankdir='LR'):
-    """
-    format: png | svg | ...
-    rankdir: TB (top to bottom graph) | LR (left to right)
-    """
     assert rankdir in ['LR', 'TB']
     nodes, edges = trace(root)
     dot = graphviz.Digraph(format=format, graph_attr={'rankdir': rankdir}) #, node_attr={'rankdir': 'TB'})
@@ -31,43 +27,51 @@ def draw_dot(root, format='svg', rankdir='LR'):
 
     return dot
 
+
+import graphviz
+
 def draw_mlp(mlp, format='svg'):
-    dot = graphviz.Digraph(format=format, graph_attr={'rankdir': 'LR'})
+    dot = graphviz.Digraph(format=format, graph_attr={'rankdir': 'LR'})  
 
     layer_nodes = []
-    for l in mlp.layers:
-        print(l)
     
     layer_nodes.append([])
     for i in range(mlp.inputlayer):
         node_id = f"input{i}"
-        label = f"X{i}"
-        dot.node(node_id, label, shape='circle', style="filled", fillcolor="red",width="1.0", height="1.0")
+        label = f"X{i+1}"
+        dot.node(node_id, label, shape='circle', style="filled", fillcolor="red", width="1.0", height="1.0")
         layer_nodes[-1].append(node_id)
 
-    h = 0
     for layer_idx, layer in enumerate(mlp.layers):
         layer_nodes.append([])
         
-        
-        if(layer_idx == len(mlp.layers) - 1):
-            for neuron_idx, neuron in enumerate(layer.neurons):
-                node_id = f"layer{layer_idx}_neuron{neuron_idx}"
-                label = f"O{neuron_idx +1}"
-                dot.node(node_id, label, shape='circle', style="filled", fillcolor="green",width="1.0", height="1.0")
-                layer_nodes[-1].append(node_id)
-        
-        else:
-            for neuron_idx, neuron in enumerate(layer.neurons):
-                node_id = f"layer{layer_idx}_neuron{neuron_idx}"
-                label = f"H{layer_idx}_{neuron_idx}"
-                dot.node(node_id, label, shape='circle', style="filled", fillcolor="yellow",width="1.0", height="1.0")
-                layer_nodes[-1].append(node_id)
+        for neuron_idx, neuron in enumerate(layer.neurons):
+            node_id = f"layer{layer_idx}_neuron{neuron_idx}"
+            if layer_idx == len(mlp.layers) - 1: 
+                label = f"O{neuron_idx+1}"
+                color = "green"
+            else:  
+                label = f"H{layer_idx+1}_{neuron_idx+1}"
+                color = "yellow"
 
+            dot.node(node_id, label, shape='circle', style="filled", fillcolor=color, width="1.0", height="1.0")
+            layer_nodes[-1].append(node_id)
+        
+        if layer_idx < len(mlp.layers):  
+            bias_id = f"bias{layer_idx+1}"
+            dot.node(bias_id, f"B{layer_idx+1}", shape='circle', style="filled", fillcolor="gray", width="0.8", height="0.8")
+            
+            dot.attr(rank='same')
+            
+            for neuron_id in layer_nodes[-1]:
+                dot.edge(bias_id, neuron_id, constraint="false")
 
     for l in range(len(layer_nodes) - 1):
-        for src in layer_nodes[l]:
-            for dst in layer_nodes[l + 1]:
+        for src in layer_nodes[l]:  
+            for dst in layer_nodes[l + 1]: 
                 dot.edge(src, dst)
 
     return dot
+
+
+

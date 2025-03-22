@@ -1,6 +1,10 @@
 import math
 import random
 from lib.value import Value
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+
 
 
 class Weight:
@@ -45,8 +49,8 @@ class Neuron(Module):
     def __init__(self, nin, activation="tanh",weight: Weight=None):
         raw_weights = weight() if weight is not None else [random.uniform(-1, 1) for _ in range(nin)]
         self.w = [Value(w) for w in raw_weights]
-        #ini bobot bias
-        self.b = Value(0)
+        #bobot bias 1
+        self.b = Value(1)
         self.activation = activation.lower()
 
     def __call__(self, x):
@@ -107,6 +111,87 @@ class MLP(Module):
 
     def parameters(self):
         return [p for layer in self.layers for p in layer.parameters()]
+    
+    def show_grad_distribution(self, x=None):
+        if x is not None:
+            print(f"\nLayer {x + 1}:")
+            for idx, neuron in enumerate(self.layers[x].neurons):
+                delta_w = " | ".join(f"ΔW{i+1}={w.grad:.4f}" for i, w in enumerate(neuron.w))  
+                print(f"  ΔW di Neuron H{idx + 1}: {delta_w}")
+            delta_wb = self.layers[x].neurons[0].b.grad  
+            print(f"  ΔWb: {delta_wb:.4f}")
+        else:
+            for layer_idx, layer in enumerate(self.layers):
+                print(f"\n=== Layer {layer_idx + 1} ===")
+                for neuron_idx, neuron in enumerate(layer.neurons):
+                    delta_w = " | ".join(f"ΔW{i+1}={w.grad:.4f}" for i, w in enumerate(neuron.w))
+                    print(f"  ΔW di Neuron H{neuron_idx + 1}: {delta_w}")
+                delta_wb = layer.neurons[0].b.grad  
+                print(f"  ΔWb: {delta_wb:.4f}")
+
+
+    def plot_grad_distribution(self, layers=None):
+        all_gradients = []
+        plt.figure(figsize=(8, 5))
+        if layers is not None:
+            plt.title(f"Distribusi ΔW pada Layer {layers}")
+            for neuron in self.layers[layers].neurons:
+                all_gradients.extend([w.grad for w in neuron.w])
+        else:
+            plt.title("Distribusi ΔW di semua layer")
+            for layer in self.layers:
+                for neuron in layer.neurons:
+                    all_gradients.extend([w.grad for w in neuron.w])  
+
+        all_gradients = np.array(all_gradients)
+
+        sns.histplot(all_gradients, bins=10, kde=True, color="blue")  
+        plt.xlabel("ΔW Value")
+        plt.ylabel("Frequency")
+        plt.grid(True)
+        plt.show()
+
+    def show_W_distribution(self, x=None):
+        if x is not None:
+            print(f"\nLayer {x + 1}:")
+            for idx, neuron in enumerate(self.layers[x].neurons):
+                weights = " | ".join(f"W{i+1}={w.data:.4f}" for i, w in enumerate(neuron.w))  
+            bias = self.layers[x].neurons[0].b.data  
+            print(f"  Wb: {bias:.4f}")
+        else:
+            for layer_idx, layer in enumerate(self.layers):
+                print(f"\n=== Layer {layer_idx + 1} ===")
+                for neuron_idx, neuron in enumerate(layer.neurons):
+                    weights = " | ".join(f"W{i+1}={w.data:.4f}" for i, w in enumerate(neuron.w))
+                    print(f"  W di Neuron H{neuron_idx + 1}: {weights}")
+                bias = layer.neurons[0].b.data  
+                print(f"  Wb: {bias:.4f}")
+
+
+    def plot_W_distribution(self,layers=None):
+        all_weights = []
+        plt.figure(figsize=(8, 5))
+        if layers is not None:
+            plt.title(f"Distribusi bobot pada Layer {layers}")
+            for neuron in self.layers[layers].neurons:
+                all_weights.extend([w.data for w in neuron.w])
+                
+        else:
+            plt.title("Distribusi bobot di semua layer")
+            for layer in self.layers:
+                for neuron in layer.neurons:
+                    all_weights.extend([w.data for w in neuron.w])  
+
+        all_weights = np.array(all_weights)
+
+        sns.histplot(all_weights, bins=10, kde=True, color="blue")  
+        plt.xlabel("Weight Value")
+        plt.ylabel("Frequency")
+        plt.grid(True)
+        plt.show()
+
+
+        
 
     def __repr__(self):
         return f"inputx : {self.inputlayer} MLP of [{', '.join(str(layer) for layer in self.layers)}]"
