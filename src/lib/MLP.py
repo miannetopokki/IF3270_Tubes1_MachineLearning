@@ -62,6 +62,8 @@ class Neuron(Module):
             return act
         elif self.activation == "tanh":
             return act.tanh()
+        elif self.activation == "sigmoid":
+            return act.sigmoid()
         else:
             raise ValueError()
 

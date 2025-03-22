@@ -27,24 +27,12 @@ digraph {
 	bias2 -> layer1_neuron2 [constraint=false]
 	bias2 -> layer1_neuron3 [constraint=false]
 	bias2 -> layer1_neuron4 [constraint=false]
-	layer2_neuron0 [label=H3_1 fillcolor=yellow height=1.0 shape=circle style=filled width=1.0]
-	layer2_neuron1 [label=H3_2 fillcolor=yellow height=1.0 shape=circle style=filled width=1.0]
-	layer2_neuron2 [label=H3_3 fillcolor=yellow height=1.0 shape=circle style=filled width=1.0]
-	layer2_neuron3 [label=H3_4 fillcolor=yellow height=1.0 shape=circle style=filled width=1.0]
-	layer2_neuron4 [label=H3_5 fillcolor=yellow height=1.0 shape=circle style=filled width=1.0]
+	layer2_neuron0 [label=O1 fillcolor=green height=1.0 shape=circle style=filled width=1.0]
+	layer2_neuron1 [label=O2 fillcolor=green height=1.0 shape=circle style=filled width=1.0]
 	bias3 [label=B3 fillcolor=gray height=0.8 shape=circle style=filled width=0.8]
 	rank=same
 	bias3 -> layer2_neuron0 [constraint=false]
 	bias3 -> layer2_neuron1 [constraint=false]
-	bias3 -> layer2_neuron2 [constraint=false]
-	bias3 -> layer2_neuron3 [constraint=false]
-	bias3 -> layer2_neuron4 [constraint=false]
-	layer3_neuron0 [label=O1 fillcolor=green height=1.0 shape=circle style=filled width=1.0]
-	layer3_neuron1 [label=O2 fillcolor=green height=1.0 shape=circle style=filled width=1.0]
-	bias4 [label=B4 fillcolor=gray height=0.8 shape=circle style=filled width=0.8]
-	rank=same
-	bias4 -> layer3_neuron0 [constraint=false]
-	bias4 -> layer3_neuron1 [constraint=false]
 	input0 -> layer0_neuron0
 	input0 -> layer0_neuron1
 	input0 -> layer0_neuron2
@@ -87,37 +75,12 @@ digraph {
 	layer0_neuron4 -> layer1_neuron4
 	layer1_neuron0 -> layer2_neuron0
 	layer1_neuron0 -> layer2_neuron1
-	layer1_neuron0 -> layer2_neuron2
-	layer1_neuron0 -> layer2_neuron3
-	layer1_neuron0 -> layer2_neuron4
 	layer1_neuron1 -> layer2_neuron0
 	layer1_neuron1 -> layer2_neuron1
-	layer1_neuron1 -> layer2_neuron2
-	layer1_neuron1 -> layer2_neuron3
-	layer1_neuron1 -> layer2_neuron4
 	layer1_neuron2 -> layer2_neuron0
 	layer1_neuron2 -> layer2_neuron1
-	layer1_neuron2 -> layer2_neuron2
-	layer1_neuron2 -> layer2_neuron3
-	layer1_neuron2 -> layer2_neuron4
 	layer1_neuron3 -> layer2_neuron0
 	layer1_neuron3 -> layer2_neuron1
-	layer1_neuron3 -> layer2_neuron2
-	layer1_neuron3 -> layer2_neuron3
-	layer1_neuron3 -> layer2_neuron4
 	layer1_neuron4 -> layer2_neuron0
 	layer1_neuron4 -> layer2_neuron1
-	layer1_neuron4 -> layer2_neuron2
-	layer1_neuron4 -> layer2_neuron3
-	layer1_neuron4 -> layer2_neuron4
-	layer2_neuron0 -> layer3_neuron0
-	layer2_neuron0 -> layer3_neuron1
-	layer2_neuron1 -> layer3_neuron0
-	layer2_neuron1 -> layer3_neuron1
-	layer2_neuron2 -> layer3_neuron0
-	layer2_neuron2 -> layer3_neuron1
-	layer2_neuron3 -> layer3_neuron0
-	layer2_neuron3 -> layer3_neuron1
-	layer2_neuron4 -> layer3_neuron0
-	layer2_neuron4 -> layer3_neuron1
 }
