@@ -42,8 +42,9 @@ if __name__ == "__main__":
     
 
     weight = Weight("uniform", 42, input_layer, lower=-0.1, upper=0.1)
+    biasW = Weight("uniform", 42, input_layer, lower=-0.1, upper=0.1)
 
-    n = MLP(input_layer,[n[0] for n in layer_f_activations],activations=[n[1] for n in layer_f_activations],weight=weight)
+    n = MLP(input_layer,[n[0] for n in layer_f_activations],activations=[n[1] for n in layer_f_activations],weight=weight, biasW=biasW)
     print(n.layers[0].neurons[0].w)
     for i in range(50): #50 epoch
 

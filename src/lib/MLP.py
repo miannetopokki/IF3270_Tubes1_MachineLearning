@@ -46,11 +46,14 @@ class Module:
         return []
 
 class Neuron(Module):
-    def __init__(self, nin, activation="tanh",weight: Weight=None):
+    def __init__(self, nin, activation="tanh",weight: Weight=None, biasW: Weight=None):
         raw_weights = weight() if weight is not None else [random.uniform(-1, 1) for _ in range(nin)]
         self.w = [Value(w) for w in raw_weights]
         #bobot bias 1
-        self.b = Value(1)
+        # self.b = Value(1)
+        raw_bias = biasW()[0] if biasW is not None else 1.0
+        self.b = Value(raw_bias)
+        print("biasW: ", self.b)
         self.activation = activation.lower()
 
     def __call__(self, x):
@@ -74,8 +77,8 @@ class Neuron(Module):
         return f"{self.activation.capitalize()}Neuron({len(self.w)})"
 
 class Layer(Module):
-    def __init__(self, nin, nout, activation="tanh", weight: Weight=None):
-        self.neurons = [Neuron(nin, activation=activation, weight=weight) for _ in range(nout)]
+    def __init__(self, nin, nout, activation="tanh", weight: Weight=None, biasW: Weight=None):
+        self.neurons = [Neuron(nin, activation=activation, weight=weight, biasW=biasW) for _ in range(nout)]
 
     def __call__(self, x):
         out = [n(x) for n in self.neurons]
@@ -89,7 +92,7 @@ class Layer(Module):
 
 
 class MLP(Module):
-    def __init__(self, nin, nouts, activations=None, weight: Weight=None):
+    def __init__(self, nin, nouts, activations=None, weight: Weight=None, biasW: Weight=None):
         #jika activation tidak diisi maka akan diisi dengan nilai default yaitu tanh
         if activations is None:
             activations = ["tanh"] * len(nouts)
@@ -100,7 +103,7 @@ class MLP(Module):
         sz = [nin] + nouts
         print("sz: " ,sz)
         self.layers = [
-            Layer(sz[i], sz[i + 1], activation=activations[i],weight=weight) for i in range(len(nouts))
+            Layer(sz[i], sz[i + 1], activation=activations[i],weight=weight, biasW=biasW) for i in range(len(nouts))
         ]
 
         self.weight = weight
