@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
     
 
-    weight = Weight("uniform", 42, input_layer, lower=-0.1, upper=0.1)
+    weight = Weight("uniform", 30, input_layer, lower=-0.1, upper=0.1)
     biasW = Weight("uniform", 42, input_layer, lower=-0.1, upper=0.1)
 
     n = MLP(input_layer,[n[0] for n in layer_f_activations],activations=[n[1] for n in layer_f_activations],weight=weight, biasW=biasW)
@@ -66,17 +66,35 @@ if __name__ == "__main__":
             #W + -lr*deltaW
             p.data += -1 *learning_rate * p.grad
 
-        print(i,"Lost Func (MSE) " ,loss.data)
+        # print(i,"Lost Func (MSE) " ,loss.data)
         
 
 
-    print(n.parameters())
+    # print(n.parameters())
    
 
 
-    for x in ypred:
-        print(x)
+    # for x in ypred:
+    #     print(x)
 
+    # Save model
+    n.save("model.pkl")
 
-    # draw_dot(loss).render("graph_output.dot",view = True)
-    # draw_mlp(n).render("mlp.dot",view= True)
+    # Load model 
+    loaded_model = MLP.load("model.pkl")
+
+    # Test output model
+    original_preds = [n(x) for x in xs]
+    loaded_preds = [loaded_model(x) for x in xs]
+
+    print("\nComparing predictions:")
+    for i, (orig, loaded) in enumerate(zip(original_preds, loaded_preds)):
+        for j, (o, l) in enumerate(zip(orig, loaded)):
+            print(f"Sample {i}, Output {j}: Original {o.data:.6f}, Loaded {l.data:.6f}")
+        
+  
+    draw_dot(loss).render("graph_output.dot",view = True)
+    
+
+    draw_mlp(n).render("mlp.dot",view= True)
+    draw_mlp(loaded_model).render("mlp_loaded.dot",view= True)

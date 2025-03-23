@@ -4,6 +4,8 @@ from lib.value import Value
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+import pickle
+
 
 
 
@@ -15,6 +17,7 @@ class Weight:
         self.lower = lower
         self.mean = mean
         self.variance = variance
+        self.seed = seed
         self.rng = random.Random(seed) 
 
     def __call__(self):
@@ -79,6 +82,7 @@ class Neuron(Module):
 class Layer(Module):
     def __init__(self, nin, nout, activation="tanh", weight: Weight=None, biasW: Weight=None):
         self.neurons = [Neuron(nin, activation=activation, weight=weight, biasW=biasW) for _ in range(nout)]
+        self.activation = activation
 
     def __call__(self, x):
         out = [n(x) for n in self.neurons]
@@ -107,12 +111,91 @@ class MLP(Module):
         ]
 
         self.weight = weight
+        self.biasW = biasW
         self.inputlayer = nin
 
     def __call__(self, x):
         for layer in self.layers:
             x = layer(x)
         return x
+    
+   
+
+    def save(self, filepath):
+        model_state = {
+            'input_size': self.inputlayer,
+            'layer_sizes': [len(layer.neurons) for layer in self.layers],
+            'activations': [layer.activation for layer in self.layers],
+            'weights': [[[w.data for w in neuron.w] for neuron in layer.neurons] for layer in self.layers],
+            'biases': [[neuron.b.data for neuron in layer.neurons] for layer in self.layers],
+            'weight_init': {
+                'method': self.weight.method,
+                'seed': self.weight.seed,
+                'lower': self.weight.lower,
+                'upper': self.weight.upper,
+                'mean': self.weight.mean,
+                'variance': self.weight.variance
+            },
+            'bias_init': {
+                'method': self.biasW.method,
+                'seed': self.biasW.seed,
+                'lower': self.biasW.lower,
+                'upper': self.biasW.upper,
+                'mean': self.biasW.mean,
+                'variance': self.biasW.variance
+            }
+        }
+        
+        with open(filepath, 'wb') as f:
+            pickle.dump(model_state, f)
+
+    @classmethod
+    def load(cls, filepath):
+        with open(filepath, 'rb') as f:
+            model_state = pickle.load(f)
+    
+        seed_weight = model_state['weight_init']['seed']
+        seed_bias = model_state['bias_init']['seed']
+        
+        weight_init = Weight(
+            model_state['weight_init']['method'],
+            seed_weight,
+            model_state['input_size'],
+            lower=model_state['weight_init']['lower'],
+            upper=model_state['weight_init']['upper'],
+            mean=model_state['weight_init']['mean'],
+            variance=model_state['weight_init']['variance']
+        )
+        
+        bias_init = Weight(
+            model_state['bias_init']['method'],
+            seed_bias,
+            model_state['input_size'],
+            lower=model_state['bias_init']['lower'],
+            upper=model_state['bias_init']['upper'],
+            mean=model_state['bias_init']['mean'],
+            variance=model_state['bias_init']['variance']
+        )
+        
+        # Buat ulang model
+        model = cls(
+            model_state['input_size'],
+            model_state['layer_sizes'],
+            activations=model_state['activations'],
+            weight=weight_init,
+            biasW=bias_init
+        )
+        
+        # Restore weights dan bias
+        for layer_idx, layer in enumerate(model.layers):
+            for neuron_idx, neuron in enumerate(layer.neurons):
+                # Restore weights list
+                for w_idx, w_value in enumerate(model_state['weights'][layer_idx][neuron_idx]):
+                    neuron.w[w_idx] = Value(w_value)
+                # Restore bias
+                neuron.b = Value(model_state['biases'][layer_idx][neuron_idx])
+        
+        return model
 
     def parameters(self):
         return [p for layer in self.layers for p in layer.parameters()]
