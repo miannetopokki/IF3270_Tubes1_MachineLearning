@@ -56,11 +56,11 @@ class Neuron(Module):
         # self.b = Value(1)
         raw_bias = biasW()[0] if biasW is not None else 1.0
         self.b = Value(raw_bias)
-        print("biasW: ", self.b)
+        # print("biasW: ", self.b)
         self.activation = activation.lower()
 
-    def __call__(self, x):
-        act = sum((wi * xi for wi, xi in zip(self.w, x)), self.b)
+    def __call__(self, x_input_forward):
+        act = sum((wi * xi for wi, xi in zip(self.w, x_input_forward)), self.b)
 
         if self.activation == "relu":
             return act.relu()
@@ -86,12 +86,12 @@ class Layer(Module):
         self.neurons = [Neuron(nin, activation=activation, weight=weight, biasW=biasW) for _ in range(nout)]
         self.activation = activation
 
-    def __call__(self, x):
+    def __call__(self, x_input_forward):
         if self.activation == "softmax":
-            raw_activations = [sum((wi * xi for wi, xi in zip(n.w, x)), n.b) for n in self.neurons]
+            raw_activations = [sum((wi * xi for wi, xi in zip(n.w, x_input_forward)), n.b) for n in self.neurons]
             return Value.softmax(raw_activations)
         else:
-            out = [n(x) for n in self.neurons] 
+            out = [n(x_input_forward) for n in self.neurons] 
             return out[0] if len(out) == 1 else out
 
     def parameters(self):
@@ -120,10 +120,10 @@ class MLP(Module):
         self.biasW = biasW
         self.inputlayer = nin
 
-    def __call__(self, x):
+    def __call__(self, x_input_forward):
         for layer in self.layers:
-            x = layer(x)
-        return x
+            x_input_forward = layer(x_input_forward)
+        return x_input_forward
     
    
 
@@ -284,8 +284,45 @@ class MLP(Module):
         plt.grid(True)
         plt.show()
 
+    def fit(self,epoch = 50,lossfunc = "MSE",learning_rate = 0.01,x=None,y=None):
+        for i in range(epoch):
+            #Forward
+            ypred = [self(x_input_forward) for x_input_forward in x]
+            
+            #Sum rumus MSE
+            if lossfunc == "MSE":
+                N = sum(len(ygt) for ygt in y)  
+                loss = sum([sum((yout_i - ygt_i)**2 for ygt_i, yout_i in zip(ygt, yout)) for ygt, yout in zip(y, ypred)])
+                loss = loss / N
+            #Todo, Loss function yg lain            
+
+
+            #flush bobot w
+            self.zero_grad()
+
+            ##Backward
+            loss.backward()
+
+            #gradient descent
+            for p in self.parameters():
+                #W + -lr*deltaW
+                p.data += -1 *learning_rate * p.grad
+
+        print("Lost Func (MSE) " ,loss.data)
+        return self
+
+    def predict(self,x,showinfo = False):
+        out =  [self(x_input_forward) for x_input_forward in x]
+        if showinfo :
+            for y_batch in out:
+                for i,y in enumerate(y_batch):
+                    print(f"Y{i}: {y.data}",end = " ")
+                print()
+
+        return out
+
+    
 
         
-
     def __repr__(self):
         return f"inputx : {self.inputlayer} MLP of [{', '.join(str(layer) for layer in self.layers)}]"
