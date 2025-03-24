@@ -119,6 +119,8 @@ class MLP(Module):
         self.weight = weight
         self.biasW = biasW
         self.inputlayer = nin
+        self.trainloss = []
+        self.validloss=[]
 
     def __call__(self, x_input_forward):
         for layer in self.layers:
@@ -284,7 +286,7 @@ class MLP(Module):
         plt.grid(True)
         plt.show()
 
-    def fit(self,epoch = 50,lossfunc = "MSE",learning_rate = 0.01,x=None,y=None):
+    def fit(self,epoch = 50,lossfunc = "MSE",learning_rate = 0.01,x=None,y=None,x_val=None,y_val = None):
         for i in range(epoch):
             #Forward
             ypred = [self(x_input_forward) for x_input_forward in x]
@@ -296,7 +298,7 @@ class MLP(Module):
                 loss = loss / N
             #Todo, Loss function yg lain            
 
-
+            self.trainloss.append(loss.data)
             #flush bobot w
             self.zero_grad()
 
@@ -307,10 +309,25 @@ class MLP(Module):
             for p in self.parameters():
                 #W + -lr*deltaW
                 p.data += -1 *learning_rate * p.grad
+            
+                # === VALIDATION LOSS ===
+            if x_val is not None and y_val is not None:
+                val_pred = [self(x_input_forward) for x_input_forward in x_val]
+                if lossfunc == "MSE":
+                    N_val = sum(len(ygt) for ygt in y_val)  
+                    val_loss = sum([sum((yout_i - ygt_i)**2 for ygt_i, yout_i in zip(ygt, yout)) for ygt, yout in zip(y_val, val_pred)]) / N_val
+                #Todo, Loss function yg lain            
+                
+                self.validloss.append(val_loss.data)
 
-        print("Lost Func (MSE) " ,loss.data)
+
+        print("Final Train Lost Func (MSE) " ,loss.data)
+        print("Final  Valid Lost Func (MSE) " ,val_loss.data)
+
         return self
 
+
+    #pake fungsi ini kalo mau dapet info predict pakai W setelah fit
     def predict(self,x,showinfo = False):
         out =  [self(x_input_forward) for x_input_forward in x]
         if showinfo :
@@ -320,6 +337,19 @@ class MLP(Module):
                 print()
 
         return out
+
+
+
+    def plot_loss(self):
+        plt.plot(self.trainloss, label="Training Loss",color = "red")
+        plt.plot(self.validloss,label = "Validation Loss",color = "blue")
+        plt.xlabel("Epoch")
+        plt.ylabel("Loss")
+        plt.legend()
+        plt.show()
+
+
+
 
     
 
