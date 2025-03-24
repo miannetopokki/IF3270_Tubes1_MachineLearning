@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import pickle
-
+from tqdm import tqdm
 
 
 
@@ -287,7 +287,8 @@ class MLP(Module):
         plt.show()
 
     def fit(self,epoch = 50,lossfunc = "MSE",learning_rate = 0.01,x=None,y=None,x_val=None,y_val = None):
-        for i in range(epoch):
+        progress_bar = tqdm(range(epoch), desc="Training", unit="epoch")  # Progress bar
+        for i in progress_bar:
             #Forward
             ypred = [self(x_input_forward) for x_input_forward in x]
             
@@ -319,10 +320,15 @@ class MLP(Module):
                 #Todo, Loss function yg lain            
                 
                 self.validloss.append(val_loss.data)
+            
+            if val_loss is not None:
+                progress_bar.set_postfix({"Train Loss": loss.data, "Val Loss": val_loss.data})
+            else:
+                progress_bar.set_postfix({"Train Loss": loss.data})
 
 
-        print("Final Train Lost Func (MSE) " ,loss.data)
-        print("Final  Valid Lost Func (MSE) " ,val_loss.data)
+        # print("Final Train Lost Func (MSE) " ,loss.data)
+        # print("Final  Valid Lost Func (MSE) " ,val_loss.data)
 
         return self
 
