@@ -70,6 +70,8 @@ class Neuron(Module):
             return act.tanh()
         elif self.activation == "sigmoid":
             return act.sigmoid()
+        elif self.activation == "softmax":
+            return act
         else:
             raise ValueError()
 
@@ -85,8 +87,12 @@ class Layer(Module):
         self.activation = activation
 
     def __call__(self, x):
-        out = [n(x) for n in self.neurons]
-        return out[0] if len(out) == 1 else out
+        if self.activation == "softmax":
+            raw_activations = [sum((wi * xi for wi, xi in zip(n.w, x)), n.b) for n in self.neurons]
+            return Value.softmax(raw_activations)
+        else:
+            out = [n(x) for n in self.neurons] 
+            return out[0] if len(out) == 1 else out
 
     def parameters(self):
         return [p for n in self.neurons for p in n.parameters()]

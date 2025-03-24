@@ -27,8 +27,8 @@ if __name__ == "__main__":
 
     input_layer = 3
     layer_f_activations = [
-    [2,'tanh'],#hidden layer 1
-    [2,'tanh'] #output layer
+    [2,'softmax'],#hidden layer 1
+    [2,'softmax'] #output layer
     ]
 
     #  Zero initialization
@@ -93,8 +93,8 @@ if __name__ == "__main__":
             print(f"Sample {i}, Output {j}: Original {o.data:.6f}, Loaded {l.data:.6f}")
         
   
-    draw_dot(loss).render("graph_output.dot",view = True)
+    # draw_dot(loss).render("graph_output.dot",view = True)
     
 
-    draw_mlp(n).render("mlp.dot",view= True)
-    draw_mlp(loaded_model).render("mlp_loaded.dot",view= True)
+    # draw_mlp(n).render("mlp.dot",view= True)
+    # draw_mlp(loaded_model).render("mlp_loaded.dot",view= True)

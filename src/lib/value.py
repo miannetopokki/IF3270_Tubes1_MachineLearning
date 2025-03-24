@@ -81,9 +81,37 @@ class Value:
             self.grad += (out.data * (1 - out.data)) * out.grad
         out._backward = _backward
         return out
+    
+    @staticmethod
+    def softmax(values):
+        # ambil max val untuk stabilitas numerik (tidak overflow)
+        max_val = max(v.data for v in values)
+        exps = [Value(math.exp(v.data - max_val), (v,), 'exp') for v in values]
+         
+        sum_exp = sum(exp.data for exp in exps)
+        
+        # hitung output softmax
+        softmax_outputs = []
+        for i, exp in enumerate(exps):
+            #exp(x_i) / Σexp(x_j)
+            out = Value(exp.data / sum_exp, (exp,) + tuple(values), 'softmax')
+            
+            def _backward(i=i, exp=exp):
+                def backward():
+                    for j, v in enumerate(values):
+                        if j == i:  # ketika input yang produce output
+                            # softmax_i * (1 - softmax_i)
+                            v.grad += out.data * (1 - out.data) * out.grad
+                        else:  # ketika input yang tidak produce output
+                            #-softmax_i * softmax_j
+                            v.grad += -out.data * exps[j].data / sum_exp * out.grad
+                return backward
+            
+            out._backward = _backward(i, exp)
+            softmax_outputs.append(out)
+        
+        return softmax_outputs
 
-
-    #Todo   Softmax
 
 
     def backward(self):
