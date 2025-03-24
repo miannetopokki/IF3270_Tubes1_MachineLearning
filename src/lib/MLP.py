@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import pickle
+import lib.lossfunc as lf
 from tqdm import tqdm
 
 
@@ -294,9 +295,7 @@ class MLP(Module):
             
             #Sum rumus MSE
             if lossfunc == "MSE":
-                N = sum(len(ygt) for ygt in y)  
-                loss = sum([sum((yout_i - ygt_i)**2 for ygt_i, yout_i in zip(ygt, yout)) for ygt, yout in zip(y, ypred)])
-                loss = loss / N
+                loss = lf.mean_squared_error(y_pred=ypred,y_true=y)
             #Todo, Loss function yg lain            
 
             self.trainloss.append(loss.data)
@@ -315,8 +314,7 @@ class MLP(Module):
             if x_val is not None and y_val is not None:
                 val_pred = [self(x_input_forward) for x_input_forward in x_val]
                 if lossfunc == "MSE":
-                    N_val = sum(len(ygt) for ygt in y_val)  
-                    val_loss = sum([sum((yout_i - ygt_i)**2 for ygt_i, yout_i in zip(ygt, yout)) for ygt, yout in zip(y_val, val_pred)]) / N_val
+                    val_loss = lf.mean_squared_error(y_true=y_val,y_pred=val_pred)
                 #Todo, Loss function yg lain            
                 
                 self.validloss.append(val_loss.data)
@@ -338,10 +336,10 @@ class MLP(Module):
         out =  [self(x_input_forward) for x_input_forward in x]
         if showinfo :
             for y_batch in out:
-                for i,y in enumerate(y_batch):
-                    print(f"Y{i}: {y.data}",end = " ")
+                y_list = [y_batch] if isinstance(y_batch, Value) else y_batch  #isinstance handle single neuron
+                for i, y in enumerate(y_list):
+                    print(f"Y{i}: {y.data}", end=" ")
                 print()
-
         return out
 
 
