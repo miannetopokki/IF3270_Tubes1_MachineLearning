@@ -6,6 +6,7 @@ import numpy as np
 import seaborn as sns
 import pickle
 import lib.lossfunc as lf
+from sklearn.utils import shuffle
 from tqdm import tqdm
 
 
@@ -287,15 +288,17 @@ class MLP(Module):
         plt.grid(True)
         plt.show()
 
-    def fit(self,epoch = 50,lossfunc = "MSE",learning_rate = 0.01,x=None,y=None,x_val=None,y_val = None):
+    def fit(self,epoch = 50,lossfunc = "MSE",learning_rate = 0.01,x=None,y=None,x_val=None,y_val = None,):
         progress_bar = tqdm(range(epoch), desc="Training", unit="epoch")  # Progress bar
         for i in progress_bar:
             #Forward
+            val_loss = None
             ypred = [self(x_input_forward) for x_input_forward in x]
             
             #Sum rumus MSE
             if lossfunc == "MSE":
                 loss = lf.mean_squared_error(y_pred=ypred,y_true=y)
+
             #Todo, Loss function yg lain            
 
             self.trainloss.append(loss.data)
@@ -325,10 +328,62 @@ class MLP(Module):
                 progress_bar.set_postfix({"Train Loss": loss.data})
 
 
-        # print("Final Train Lost Func (MSE) " ,loss.data)
-        # print("Final  Valid Lost Func (MSE) " ,val_loss.data)
 
         return self
+
+
+    def fit_minibatch(self, epoch=50, lossfunc="MSE", learning_rate=0.01, x=None, y=None, x_val=None, y_val=None, batch_size=10):
+        progress_bar = tqdm(range(epoch), desc="Training", unit="epoch")  # Progress bar
+        
+        for i in progress_bar:
+            x, y = shuffle(x, y)
+
+            batch_losses = []
+            
+            # mini-batch
+            for j in range(0, len(x), batch_size):
+                x_batch = x[j:j + batch_size]
+                y_batch = y[j:j + batch_size]
+
+                # FF
+                y_pred = [self(x_input_forward) for x_input_forward in x_batch]
+
+                # loss
+                if lossfunc == "MSE":
+                    loss = lf.mean_squared_error(y_pred=y_pred, y_true=y_batch)
+                
+                batch_losses.append(loss.data)
+
+                # zero gradients sebelum backward
+                self.zero_grad()
+
+                # NN
+                loss.backward()
+
+                # grad descent
+                for p in self.parameters():
+                    p.data += -1 * learning_rate * p.grad
+
+            #  rata-rata loss per epoch
+            avg_loss = np.mean(batch_losses)
+            self.trainloss.append(avg_loss)
+
+            # === VALIDATION LOSS ===
+            val_loss = None
+            if x_val is not None and y_val is not None:
+                val_pred = [self(x_input_forward) for x_input_forward in x_val]
+                if lossfunc == "MSE":
+                    val_loss = lf.mean_squared_error(y_true=y_val, y_pred=val_pred)
+                
+                self.validloss.append(val_loss.data)
+
+            if val_loss is not None:
+                progress_bar.set_postfix({"Train Loss": avg_loss, "Val Loss": val_loss.data})
+            else:
+                progress_bar.set_postfix({"Train Loss": avg_loss})
+
+        return self
+
 
 
     #pake fungsi ini kalo mau dapet info predict pakai W setelah fit
