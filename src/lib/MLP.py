@@ -298,7 +298,12 @@ class MLP(Module):
             #Sum rumus MSE
             if lossfunc == "MSE":
                 loss = lf.mean_squared_error(y_pred=ypred,y_true=y)
-
+            elif lossfunc == "BCE":
+                loss = lf.binary_crossentropy(y_pred=ypred,y_true=y)
+            elif lossfunc == "CCE":
+                loss = lf.categorical_crossentropy(y_pred=ypred,y_true=y)
+            else:
+                raise ValueError("Invalid loss function")
             #Todo, Loss function yg lain            
 
             self.trainloss.append(loss.data)
@@ -318,7 +323,12 @@ class MLP(Module):
                 val_pred = [self(x_input_forward) for x_input_forward in x_val]
                 if lossfunc == "MSE":
                     val_loss = lf.mean_squared_error(y_true=y_val,y_pred=val_pred)
-                #Todo, Loss function yg lain            
+                elif lossfunc == "BCE":
+                    val_loss = lf.binary_crossentropy(y_true=y_val,y_pred=val_pred)
+                elif lossfunc == "CCE":
+                    val_loss = lf.categorical_crossentropy(y_true=y_val,y_pred=val_pred)
+                else:
+                    raise ValueError("Invalid loss function")
                 
                 self.validloss.append(val_loss.data)
             

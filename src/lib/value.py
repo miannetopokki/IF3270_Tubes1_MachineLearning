@@ -158,3 +158,14 @@ class Value:
 
     def __repr__(self):
         return f"Value(data={self.data}, grad={self.grad})"
+    
+    def log(self, base=math.e):
+        epsilon = 1e-7
+        self.data = max(epsilon, self.data)
+        out = Value(math.log(self.data, base), (self,), 'log')
+        
+        def _backward():
+            self.grad += (1 / (self.data * math.log(base))) * out.grad
+        out._backward = _backward
+        
+        return out
