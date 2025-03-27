@@ -51,9 +51,8 @@ class Value:
 
         #Turunan ReLU
         def _backward():
-            self.grad += (out.data > 0) * out.grad  #rumus chain rule turunan
+            self.grad += (1 if self.data > 0 else 0) * out.grad
         out._backward = _backward
-
         return out
 
 
