@@ -12,34 +12,42 @@ from tqdm import tqdm
 
 
 class Weight:
-    def __init__(self, method, seed, nin, upper=None, lower=None, mean=None, variance=None):
-        self.method = method
-        self.nin = nin
+    def __init__(self, method, seed, upper=None, lower=None, mean=None, variance=None):
+        self.method = method.lower()
         self.upper = upper
         self.lower = lower
         self.mean = mean
         self.variance = variance
         self.seed = seed
-        self.rng = random.Random(seed) 
+        self.rng = random.Random(seed)
 
     def __call__(self):
+        # Bobot yang dihasilkan berdasarkan metode yang dipilih
         if self.method == "uniform":
             if self.lower is None or self.upper is None:
                 raise ValueError("Lower and upper bounds must be provided for uniform distribution.")
-            return [self.rng.uniform(self.lower, self.upper) for _ in range(self.nin)]
+            return self.rng.uniform(self.lower, self.upper)
         
         elif self.method == "normal":
             if self.mean is None or self.variance is None:
                 raise ValueError("Mean and variance must be provided for normal distribution.")
             stddev = math.sqrt(self.variance)
-            return [self.rng.gauss(self.mean, stddev) for _ in range(self.nin)]
+            return self.rng.gauss(self.mean, stddev)
         
         elif self.method == "zero":
-            return [0 for _ in range(self.nin)]
-
+            return 0
         
+        # elif self.method == "he":  
+        #     stddev = math.sqrt(2.0)
+        #     return self.rng.gauss(0, stddev)
+        
+        # elif self.method == "xavier":  
+        #     stddev = math.sqrt(1.0)
+        #     return self.rng.gauss(0, stddev)
         
         else:
+            raise ValueError("Invalid weight initialization method.")
+
             raise ValueError("Invalid weight initialization method.")
 
 
@@ -54,17 +62,16 @@ class Module:
 
 class Neuron(Module):
     def __init__(self, nin, activation="tanh",weight: Weight=None, biasW: Weight=None):
-        raw_weights = weight() if weight is not None else [random.uniform(-1, 1) for _ in range(nin)]
+        raw_weights = [weight() for _ in range(nin)] if weight is not None else [random.uniform(-1.0, 1.0) for _ in range(nin)]
         self.w = [Value(w) for w in raw_weights]
-        #bobot bias 1
-        # self.b = Value(1)
-        raw_bias = biasW()[0] if biasW is not None else 1.0
+        raw_bias = biasW() if biasW is not None else 1.0
         self.b = Value(raw_bias)
         # print("biasW: ", self.b)
         self.activation = activation.lower()
 
     def __call__(self, x_input_forward):
         act = sum((wi * xi for wi, xi in zip(self.w, x_input_forward)), self.b)
+        # act = np.dot(self.w, x_input_forward) + self.b
 
         if self.activation == "relu":
             return act.relu()
@@ -127,6 +134,7 @@ class MLP(Module):
         self.validloss=[]
 
     def __call__(self, x_input_forward):
+        x_input_forward = np.array(x_input_forward)
         for layer in self.layers:
             x_input_forward = layer(x_input_forward)
         return x_input_forward
