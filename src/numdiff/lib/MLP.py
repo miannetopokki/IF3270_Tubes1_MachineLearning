@@ -20,6 +20,8 @@ class Layer:
         self.weights = self.initialize_weights(weight_init, seed, **kwargs)
         self.biases = self.initialize_biases(bias_init, seed, **kwargs)
 
+
+
     def initialize_weights(self, method, seed, **kwargs):
         if hasattr(WeightInit, method):
             return getattr(WeightInit, method)(size=(self.input_size, self.n_neurons), seed=seed, **kwargs)  
@@ -42,6 +44,10 @@ class MLP:
         self.loss_function = LossFunction(loss_function)
         self.loss_graph = []
         self.valid_graph = []
+        self.weights_history = {i: [] for i in range(self.num_layers)}
+        self.gradients_history = {i: [] for i in range(self.num_layers)}
+
+        
     def forward(self, X):
         self.activations = [X]
 
@@ -81,6 +87,9 @@ class MLP:
 
             self.layers[i].weights -= self.lr * dW
             self.layers[i].biases -= self.lr * db
+
+            self.weights_history[i].append(self.layers[i].weights.flatten())
+            self.gradients_history[i].append(dW.flatten())
         
     # print("backward pass done")
 
@@ -101,7 +110,6 @@ class MLP:
             for i in range(0, m, batch_size):
                 X_batch = X_shuffled[i:i+batch_size]
                 y_batch = y_shuffled[i:i+batch_size]
-
                 y_pred = self.forward(X_batch)
                 self.backward(X_batch, y_batch)
 
@@ -143,4 +151,20 @@ class MLP:
         plt.xlabel("Epoch")
         plt.ylabel("Loss")
         plt.legend()
+        plt.show()
+
+    
+
+    def plot_weight_distribution(self):
+        fig, axes = plt.subplots(1, self.num_layers, figsize=(15, 5))
+        for i in range(self.num_layers):
+            axes[i].hist(self.weights_history[i][-1], bins=30, alpha=0.7, color='b')
+            axes[i].set_title(f'Layer {i+1} Weights')
+        plt.show()
+
+    def plot_gradient_distribution(self):
+        fig, axes = plt.subplots(1, self.num_layers, figsize=(15, 5))
+        for i in range(self.num_layers):
+            axes[i].hist(self.gradients_history[i][-1], bins=30, alpha=0.7, color='r')
+            axes[i].set_title(f'Layer {i+1} Gradients')
         plt.show()
