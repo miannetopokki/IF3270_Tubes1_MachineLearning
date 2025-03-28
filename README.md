@@ -7,7 +7,8 @@ Pada Tugas Besar 1 mata kuliah IF3270 Pembelajaran Mesin, kami akan mengimplemen
 </p>
 
 <p align="center">
-  <img src="test/test_img.png" alt="Centered Image">
+  <img src="test/test_img.png" alt="Predictions" height="400">
+  <img src="src/numdiff/mlp_visualization.png" alt="Neural Network" height="400">
 </p>
 
 ## Cara menjalankan program
