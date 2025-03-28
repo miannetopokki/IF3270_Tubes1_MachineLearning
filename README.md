@@ -3,13 +3,18 @@
 > Tugas Besar 1 IF3270 Pembelajaran Mesin Feedforward Neural Network
 
 <p align="justify"> 
-Pada Tugas Besar 1 mata kuliah IF3270 Pembelajaran Mesin, kami akan mengimplementasikan Feed Forward Neural Network (FFNN) dalam bahasa pemrograman Python dari nol tanpa menggunakan pustaka pembelajaran mesin seperti Scikit-Learn, Tensorflow, atau PyTorch. Tugas ini bertujuan untuk memberikan pemahaman mendalam tentang cara kerja Artificial Neural Network, termasuk forward propagation, backward propagation, activation function, dan loss function.
+Pada Tugas Besar 1 mata kuliah IF3270 Pembelajaran Mesin, kami mengimplementasikan Feed Forward Neural Network (FFNN) dalam bahasa pemrograman Python dari nol tanpa menggunakan pustaka pembelajaran mesin seperti Scikit-Learn, Tensorflow, atau PyTorch. Tugas ini bertujuan untuk memberikan pemahaman mendalam tentang cara kerja Artificial Neural Network, termasuk forward propagation, backward propagation, activation function, dan loss function. Model ini dibangun untuk melakukan prediksi pada dataset 
+<a href="https://www.openml.org/search?type=data&sort=runs&id=554" target="_blank">mnist_784</a>.
 </p>
 
 <p align="center">
   <img src="test/test_img.png" alt="Predictions" height="400">
   <img src="src/numdiff/mlp_visualization.png" alt="Neural Network" height="400">
 </p>
+
+## Implementasi
+1. `src/numdiff` Implementasi MLP dengan perhitungan gradien menggunakan diferensiasi numerik (numerical differentiation) <br>
+2. `src/autodiff` Implementasi MLP dengan perhitungan gradien menggunakan autodiff (gradien otomatis), hasil modifikasi dari pustaka [micrograd](https://github.com/karpathy/micrograd) (sangat lambat jika digunakan untuk dataset mnist_784).
 
 ## Cara menjalankan program
 
