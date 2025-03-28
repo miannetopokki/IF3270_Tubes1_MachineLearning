@@ -1,4 +1,6 @@
-# IF3270_Tubes1_MachineLearning
+<h1 align="center">
+IF3270_Tubes1_MachineLearning
+</h1>
 
 > Tugas Besar 1 IF3270 Pembelajaran Mesin Feedforward Neural Network
 
@@ -13,7 +15,7 @@ Pada Tugas Besar 1 mata kuliah IF3270 Pembelajaran Mesin, kami mengimplementasik
 </p>
 
 ## Implementasi
-1. `src/numdiff` Implementasi MLP dengan perhitungan gradien menggunakan diferensiasi numerik (numerical differentiation) <br>
+1. `src/numdiff` Implementasi MLP dengan perhitungan gradien menggunakan diferensiasi numerik (numerical differentiation). <br>
 2. `src/autodiff` Implementasi MLP dengan perhitungan gradien menggunakan autodiff (gradien otomatis), hasil modifikasi dari pustaka [micrograd](https://github.com/karpathy/micrograd) (sangat lambat jika digunakan untuk dataset mnist_784).
 
 ## Cara menjalankan program
