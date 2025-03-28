@@ -18,6 +18,9 @@ Pada Tugas Besar 1 mata kuliah IF3270 Pembelajaran Mesin, kami mengimplementasik
 1. `src/numdiff` Implementasi MLP dengan perhitungan gradien menggunakan diferensiasi numerik (numerical differentiation). <br>
 2. `src/autodiff` Implementasi MLP dengan perhitungan gradien menggunakan autodiff (gradien otomatis), hasil modifikasi dari pustaka [micrograd](https://github.com/karpathy/micrograd) (sangat lambat jika digunakan untuk dataset mnist_784).
 
+## Keperluan
+1. [Python v3.11+](https://www.python.org/downloads/release/python-3110/)
+
 ## Cara menjalankan program
 
 1. Clone Repository
@@ -35,7 +38,7 @@ cd IF3270_Tubes1_MachineLearning
 3. Setup virtual environment Python
 
 ```bash
-virtualenv venv
+python -m venv venv
 ./venv/Scirpts/activate
 ```
 
