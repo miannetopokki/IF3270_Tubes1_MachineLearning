@@ -36,7 +36,7 @@ class Layer:
 
 
 class MLP:
-    def __init__(self, layers,loss_function, lr=0.01):
+    def __init__(self, layers,loss_function, lr=0.01,verbose=1):
         
         self.lr = lr
         self.num_layers = len(layers)
@@ -46,6 +46,7 @@ class MLP:
         self.valid_graph = []
         self.weights_history = {i: [] for i in range(self.num_layers)}
         self.gradients_history = {i: [] for i in range(self.num_layers)}
+        self.verbose = verbose
 
         
     def forward(self, X):
@@ -98,41 +99,45 @@ class MLP:
         return -np.mean(np.sum(y_true * np.log(y_pred + 1e-8), axis=1))
 
 
-    def train(self, X, y, X_val=None, y_val=None, epochs=10, batch_size=64):   
-        progress_bar = tqdm(total=epochs, desc="Training", unit="epoch", position=0, leave=True)  
-        m = X.shape[0]
+    def train(self, X, y, X_val=None, y_val=None, epochs=10, batch_size=64):
+            m = X.shape[0]
+            
+            progress_bar = tqdm(total=epochs, desc="Training", unit="epoch", position=0, leave=True) if self.verbose else None
 
-        for epoch in range(epochs):
-            perm = np.random.permutation(m)
-            X_shuffled = X[perm]
-            y_shuffled = y[perm]
+            for epoch in range(epochs):
+                perm = np.random.permutation(m)
+                X_shuffled = X[perm]
+                y_shuffled = y[perm]
 
-            for i in range(0, m, batch_size):
-                X_batch = X_shuffled[i:i+batch_size]
-                y_batch = y_shuffled[i:i+batch_size]
-                y_pred = self.forward(X_batch)
-                self.backward(X_batch, y_batch)
+                for i in range(0, m, batch_size):
+                    X_batch = X_shuffled[i:i+batch_size]
+                    y_batch = y_shuffled[i:i+batch_size]
+                    y_pred = self.forward(X_batch)
+                    self.backward(X_batch, y_batch)
 
-            y_pred_train = self.forward(X)
-            loss_train = self.compute_loss(y, y_pred_train)
-            acc_train = self.accuracy(X, y)
-            self.loss_graph.append(loss_train)
+                y_pred_train = self.forward(X)
+                loss_train = self.compute_loss(y, y_pred_train)
+                acc_train = self.accuracy(X, y)
+                self.loss_graph.append(loss_train)
 
-           
-            if X_val is not None and y_val is not None:
-                y_pred_val = self.forward(X_val)
-                loss_val = self.compute_loss(y_val, y_pred_val)
-                self.valid_graph.append(loss_val)
-                progress_bar.set_postfix(train_loss=f"{loss_train:.4f}", 
-                                        val_loss=f"{loss_val:.4f}", 
-                                        accuracy=f"{acc_train:.2f}%")
-            else:
-                progress_bar.set_postfix(train_loss=f"{loss_train:.4f}", 
-                                        accuracy=f"{acc_train:.2f}%")
+                if X_val is not None and y_val is not None:
+                    y_pred_val = self.forward(X_val)
+                    loss_val = self.compute_loss(y_val, y_pred_val)
+                    self.valid_graph.append(loss_val)
 
-            progress_bar.update(1)  
+                    if self.verbose:
+                        progress_bar.set_postfix(train_loss=f"{loss_train:.4f}", 
+                                                val_loss=f"{loss_val:.4f}", 
+                                                accuracy=f"{acc_train:.2f}%")
+                elif self.verbose:
+                    progress_bar.set_postfix(train_loss=f"{loss_train:.4f}", 
+                                            accuracy=f"{acc_train:.2f}%")
 
-        progress_bar.close()  
+                if self.verbose:
+                    progress_bar.update(1)
+
+            if self.verbose:
+                progress_bar.close()
 
 
 
