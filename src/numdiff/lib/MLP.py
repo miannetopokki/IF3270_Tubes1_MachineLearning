@@ -51,7 +51,6 @@ class MLP:
         
     def forward(self, X):
         self.activations = [X]
-
         for i in range(self.num_layers):
             z = np.dot(self.activations[-1], self.layers[i].weights) + self.layers[i].biases
             a = self.layers[i].activation.activate(z)
@@ -93,12 +92,6 @@ class MLP:
             self.gradients_history[i].append(dW.flatten())
         
     # print("backward pass done")
-
-
-    def compute_loss(self, y_true, y_pred):
-        return -np.mean(np.sum(y_true * np.log(y_pred + 1e-8), axis=1))
-
-
     def train(self, X, y, X_val=None, y_val=None, epochs=10, batch_size=64):
             m = X.shape[0]
             
@@ -116,15 +109,14 @@ class MLP:
                     self.backward(X_batch, y_batch)
 
                 y_pred_train = self.forward(X)
-                loss_train = self.compute_loss(y, y_pred_train)
+                loss_train = self.loss_function.compute(y,y_pred_train)
                 acc_train = self.accuracy(X, y)
                 self.loss_graph.append(loss_train)
 
                 if X_val is not None and y_val is not None:
                     y_pred_val = self.forward(X_val)
-                    loss_val = self.compute_loss(y_val, y_pred_val)
+                    loss_val = self.loss_function.compute(y_val,y_pred_val)
                     self.valid_graph.append(loss_val)
-
                     if self.verbose:
                         progress_bar.set_postfix(train_loss=f"{loss_train:.4f}", 
                                                 val_loss=f"{loss_val:.4f}", 
