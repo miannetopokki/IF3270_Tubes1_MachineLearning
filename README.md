@@ -2,7 +2,7 @@
 IF3270_Tubes1_MachineLearning
 </h1>
 
-> Tugas Besar 1 IF3270 Pembelajaran Mesin Feedforward Neural Network
+> Tugas Besar 1 IF3270 Pembelajaran Mesin: Feedforward Neural Network
 
 <p align="justify"> 
 Pada Tugas Besar 1 mata kuliah IF3270 Pembelajaran Mesin, kami mengimplementasikan Feed Forward Neural Network (FFNN) dalam bahasa pemrograman Python dari nol tanpa menggunakan pustaka pembelajaran mesin seperti Scikit-Learn, Tensorflow, atau PyTorch. Tugas ini bertujuan untuk memberikan pemahaman mendalam tentang cara kerja Artificial Neural Network, termasuk forward propagation, backward propagation, activation function, dan loss function. Model ini dibangun untuk melakukan prediksi pada dataset 
@@ -39,7 +39,7 @@ cd IF3270_Tubes1_MachineLearning
 
 ```bash
 python -m venv venv
-./venv/Scirpts/activate
+./venv/Scripts/activate
 ```
 
 3. Install dependency
