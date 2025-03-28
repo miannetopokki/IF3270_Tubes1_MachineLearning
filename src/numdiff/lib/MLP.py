@@ -36,7 +36,7 @@ class Layer:
 
 
 class MLP:
-    def __init__(self, layers,loss_function, lr=0.01,verbose=1):
+    def __init__(self, layers,loss_function, lr=0.01):
         
         self.lr = lr
         self.num_layers = len(layers)
@@ -46,7 +46,6 @@ class MLP:
         self.valid_graph = []
         self.weights_history = {i: [] for i in range(self.num_layers)}
         self.gradients_history = {i: [] for i in range(self.num_layers)}
-        self.verbose = verbose
 
         
     def forward(self, X):
@@ -92,10 +91,10 @@ class MLP:
             self.gradients_history[i].append(dW.flatten())
         
     # print("backward pass done")
-    def train(self, X, y, X_val=None, y_val=None, epochs=10, batch_size=64):
+    def train(self, X, y, X_val=None, y_val=None, epochs=10, batch_size=64,verbose= 1):
             m = X.shape[0]
             
-            progress_bar = tqdm(total=epochs, desc="Training", unit="epoch", position=0, leave=True) if self.verbose else None
+            progress_bar = tqdm(total=epochs, desc="Training", unit="epoch", position=0, leave=True) if verbose else None
 
             for epoch in range(epochs):
                 perm = np.random.permutation(m)
@@ -117,18 +116,18 @@ class MLP:
                     y_pred_val = self.forward(X_val)
                     loss_val = self.loss_function.compute(y_val,y_pred_val)
                     self.valid_graph.append(loss_val)
-                    if self.verbose:
+                    if verbose:
                         progress_bar.set_postfix(train_loss=f"{loss_train:.4f}", 
                                                 val_loss=f"{loss_val:.4f}", 
                                                 accuracy=f"{acc_train:.2f}%")
-                elif self.verbose:
+                elif verbose:
                     progress_bar.set_postfix(train_loss=f"{loss_train:.4f}", 
                                             accuracy=f"{acc_train:.2f}%")
 
-                if self.verbose:
+                if verbose:
                     progress_bar.update(1)
 
-            if self.verbose:
+            if verbose:
                 progress_bar.close()
 
 
