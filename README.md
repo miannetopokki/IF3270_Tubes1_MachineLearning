@@ -52,18 +52,18 @@ pip install -r requirements.txt
         <td>1</td>
         <td>Hugo Sabam Augusto</td>
         <td>13522129</td>
-        <td>Implementasi fungsi loss MSE, ReLU, tanh , linear, dan fitur tambahan seperti plotting dan graf.</td>
+        <td>Implementasi kelas MLP, Implementasi fungsi loss MSE, ReLU, tanh , linear, dan fitur tambahan seperti plotting dan graf, menulis laporan.</td>
     </tr>
     <tr>
         <td>2</td>
         <td>Muhammad Zaki</td>
         <td>13522136</td>
-        <td>Implementasi save and load, inisialisasi bobot, sigmoid menulis laporan.</td>
+        <td>Debug MLP, Implementasi save and load, inisialisasi bobot, sigmoid, menulis laporan.</td>
     </tr>
     <tr>
         <td>3</td>
         <td>Ahmad Rafi Maliki</td>
         <td>13522137</td>
-        <td>Implementasi fungsi loss BCE dan CCE, menulis laporan.</td>
+        <td>Debug MLP, Implementasi fungsi loss BCE dan CCE, kelas Activation, kelas Layer, menulis laporan.</td>
     </tr>
 </table>
