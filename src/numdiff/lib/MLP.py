@@ -144,3 +144,55 @@ class MLP:
         plt.ylabel("Loss")
         plt.legend()
         plt.show()
+
+    def save(self, filepath):
+        model_state = {
+            'num_layers': self.num_layers,
+            'lr': self.lr,
+            'loss_function_method': self.loss_function.method,
+            'loss_graph': self.loss_graph,
+            'valid_graph': self.valid_graph,
+            'layers_data': []
+        }
+        
+        for i, layer in enumerate(self.layers):
+            layer_data = {
+                'input_size': layer.input_size,
+                'n_neurons': layer.n_neurons,
+                'activation_method': layer.activation.method,
+                'weights': layer.weights,
+                'biases': layer.biases,
+                'seed': layer.seed
+            }
+            model_state['layers_data'].append(layer_data)
+        
+        with open(filepath, 'wb') as f:
+            pickle.dump(model_state, f)
+        
+        print(f"Model successfully saved to {filepath}")
+
+    @classmethod
+    def load(cls, filepath):
+
+        with open(filepath, 'rb') as f:
+            model_state = pickle.load(f)
+        
+        layers = []
+        for layer_data in model_state['layers_data']:
+            layer = Layer(
+                input_size=layer_data['input_size'],
+                n_neurons=layer_data['n_neurons'],
+                activation=layer_data['activation_method'],
+                seed=layer_data['seed']
+            )
+            layer.weights = layer_data['weights']
+            layer.biases = layer_data['biases']
+            layers.append(layer)
+        
+        model = cls(layers, model_state['loss_function_method'], lr=model_state['lr'])
+        
+        model.loss_graph = model_state['loss_graph']
+        model.valid_graph = model_state['valid_graph']
+        
+        print(f"Model successfully loaded from {filepath}")
+        return model
