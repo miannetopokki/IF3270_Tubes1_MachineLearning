@@ -36,7 +36,7 @@ class Layer:
 
 
 class MLP:
-    def __init__(self, layers,loss_function, lr=0.01):
+    def __init__(self, layers,loss_function, lr=0.01,regularization= None,reg_lambda = 0.001):
         
         self.lr = lr
         self.num_layers = len(layers)
@@ -44,6 +44,8 @@ class MLP:
         self.loss_function = LossFunction(loss_function)
         self.loss_graph = []
         self.valid_graph = []
+        self.regularization = regularization  
+        self.reg_lambda = reg_lambda          
         self.weights_history = {i: [] for i in range(self.num_layers)}
         self.gradients_history = {i: [] for i in range(self.num_layers)}
 
@@ -83,6 +85,13 @@ class MLP:
         for i in range(self.num_layers):
             dW = (1 / m) * np.dot(self.activations[i].T, errors[i])
             db = (1 / m) * np.sum(errors[i], axis=0, keepdims=True)
+
+            # regularisasi
+            if self.regularization == 'l2':
+                dW += self.reg_lambda * self.layers[i].weights
+            elif self.regularization == 'l1':
+                dW += self.reg_lambda * np.sign(self.layers[i].weights)
+
 
             self.layers[i].weights -= self.lr * dW
             self.layers[i].biases -= self.lr * db
