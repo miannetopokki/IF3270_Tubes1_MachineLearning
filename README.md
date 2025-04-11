@@ -63,7 +63,7 @@ pip install -r requirements.txt
         <td>1</td>
         <td>Hugo Sabam Augusto</td>
         <td>13522129</td>
-        <td>Implementasi kelas MLP, Implementasi fungsi loss MSE, ReLU, tanh , linear, dan fitur tambahan seperti plotting dan graf, menulis laporan.</td>
+        <td>Implementasi kelas MLP, Implementasi fungsi loss MSE, ReLU, tanh , linear, dan fitur tambahan seperti plotting dan graf, regularization, menulis laporan.</td>
     </tr>
     <tr>
         <td>2</td>
